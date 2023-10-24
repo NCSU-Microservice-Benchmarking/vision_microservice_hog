@@ -5,11 +5,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.SchemaProperties;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
+//import io.swagger.v3.oas.annotations.media.Content;
+//import io.swagger.v3.oas.annotations.media.Schema;
+//import io.swagger.v3.oas.annotations.media.SchemaProperties;
+//import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.*;
+//import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
+class PostRequestBody {
+    String key1;
+    String key2;
+}
 
 @RestController
 public class HOGController {
@@ -22,12 +28,9 @@ public class HOGController {
     @PostMapping("/model-hog-people")
     @Operation(summary = "Returns the detected image", 
                 description = "Receives an image and returns the detected result")
-    @RequestBody(description = "Details of request")
-    @ApiResponse(responseCode = "200", description = "image in PNG format with people surrounded by bounding boxes", content = @Content(schema = @Schema (type = "string", format = "binary")))
-    public String HogMethod() {
-        return "something idk";
-        
-
+    public String HogMethod(@RequestBody PostRequestBody requestBody) {
+        System.out.println("Hello this is the requestbody: " + requestBody.key1);
+        return requestBody.key1;
     }
 }
 // can i make changes to the spring-first-app and use it as the foundation for the microservice
