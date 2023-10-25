@@ -27,12 +27,18 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-        <dependency>
-			<groupId>org.opencv</groupId>
-			<artifactId>opencv</artifactId>
-			<version>4.8.0</version>
+		<dependency>
+			<groupId>opencv</groupId>
+			<artifactId>opencv480</artifactId>
+			<version>4.8.0-0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/resources/lib/opencv-480.jar</systemPath>
 		</dependency>
+<!--        <dependency>-->
+<!--			<groupId>org.opencv</groupId>-->
+<!--			<artifactId>opencv</artifactId>-->
+<!--			<version>4.8.0</version>-->
+<!--		</dependency>-->
 <!-- added this dependency to generate API documentation-->
 		<dependency>
     		<groupId>org.springdoc</groupId>

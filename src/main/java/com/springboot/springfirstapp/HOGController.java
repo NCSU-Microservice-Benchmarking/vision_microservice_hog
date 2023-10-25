@@ -1,5 +1,6 @@
 package com.springboot.springfirstapp;
 
+import org.opencv.core.Mat;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,7 +31,7 @@ public class HOGController {
                 description = "Receives an image and returns the detected result")
     public String HogMethod(@RequestBody PostRequestBody requestBody) {
         System.out.println("Hello this is the requestbody: " + requestBody.key1);
+        Mat m = new Mat();
         return requestBody.key1;
     }
 }
-// can i make changes to the spring-first-app and use it as the foundation for the microservice
