@@ -11,10 +11,22 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-class PostRequestBody {
-    String key1;
-    String key2;
+class MyRequest {
+    private byte[] image;
+
+    public MyRequest() {}
+    public MyRequest(byte[] image) {
+        this.image = image;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
 }
+
 
 @RestController
 public class HOGController {
@@ -30,8 +42,8 @@ public class HOGController {
     @PostMapping("/model-hog-people")
     @Operation(summary = "Returns the detected image", 
                 description = "Receives an image and returns the detected result")
-    public String HogMethod(@RequestBody PostRequestBody requestBody) {
-        System.out.println("Hello this is the requestbody: " + requestBody.key1);
+    public String HogMethod(@RequestBody MyRequest requestBody) {
+        System.out.println("Hello this is the requestbody: ");
         //Mat m = new Mat();
         return myHogService.ProcessImage("hello");
         //return requestBody.key1;

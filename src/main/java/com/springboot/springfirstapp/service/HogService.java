@@ -15,7 +15,7 @@ public class HogService {
         System.out.println("Start");
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         // Load image
-        Mat image = Imgcodecs.imread("/root/practice/stockpic.jpg");
+        Mat image = Imgcodecs.imread("/root/practice/stockpic.jpg"); // will be replaced with request body
 
         // Convert image to grayscale
         Mat gray = new Mat();
