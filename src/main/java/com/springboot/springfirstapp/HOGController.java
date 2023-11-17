@@ -1,32 +1,19 @@
-package com.springboot.springfirstapp;
-
-import org.opencv.core.Mat;
+package com.springboot.springfirstapp.controller;
+import com.springboot.springfirstapp.service.HogService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.springboot.springfirstapp.service.HogService;
-
 import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.beans.factory.annotation.Autowired;
+//import io.swagger.v3.oas.annotations.media.Content;
+//import io.swagger.v3.oas.annotations.media.Schema;
+//import io.swagger.v3.oas.annotations.media.SchemaProperties;
+//import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import org.springframework.web.bind.annotation.*;
-
-class MyRequest {
-    private byte[] image;
-
-    public MyRequest() {}
-    public MyRequest(byte[] image) {
-        this.image = image;
-    }
-
-    public byte[] getImage() {
-        return image;
-    }
-    public void setImage(byte[] image) {
-        this.image = image;
-    }
-}
-
+import org.springframework.web.multipart.MultipartFile;
+//import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @RestController
 public class HOGController {
@@ -40,12 +27,10 @@ public class HOGController {
     }
 
     @PostMapping("/model-hog-people")
-    @Operation(summary = "Returns the detected image", 
-                description = "Receives an image and returns the detected result")
-    public String HogMethod(@RequestBody MyRequest requestBody) {
+    @Operation(summary = "Returns the detected image",
+            description = "Receives an image and returns the detected result")
+    public ResponseEntity HogMethod(@RequestParam("image") MultipartFile files) {
         System.out.println("Hello this is the requestbody: ");
-        //Mat m = new Mat();
-        return myHogService.ProcessImage("hello");
-        //return requestBody.key1;
+        return myHogService.ProcessImage(files);
     }
 }
