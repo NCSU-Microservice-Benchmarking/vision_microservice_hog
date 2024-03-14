@@ -26,6 +26,11 @@ public class HOGController {
         return "Hello World";
     }
 
+    @RequestMapping("/health-check")
+    public String healthCheck() {
+        return "healthy";
+    }
+
     @PostMapping("/model-hog-people")
     @Operation(summary = "Returns the detected image",
             description = "Receives an image and returns the detected result")

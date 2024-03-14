@@ -33,7 +33,13 @@
 			<version>4.8.0-0</version>
 			<scope>system</scope>
 			<systemPath>${project.basedir}/src/main/resources/lib/opencv-480.jar</systemPath>
-		</dependency>
+ 		</dependency>
+
+		<!-- <dependency>
+			<groupId>org</groupId>
+			<artifactId>opencv480</artifactId>
+			<version>4.8.0</version>
+		</dependency> -->
 		<!-- <dependency> -->
 		<!-- 	<groupId>org.opencv</groupId> -->
 		<!-- 	<artifactId>opencv</artifactId> -->
@@ -60,6 +66,9 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<includeSystemScope>true</includeSystemScope>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
