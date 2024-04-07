@@ -37,5 +37,6 @@ public class HOGController {
     public ResponseEntity HogMethod(@RequestParam("image") MultipartFile files) {
         System.out.println("Hello this is the requestbody: ");
         return myHogService.ProcessImage(files);
+       // return myHogService.imageReplacement();
     }
 }

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 
+
 //@Service
 public class HogService {
 
@@ -52,7 +53,7 @@ public class HogService {
                     false);
 
             List<Rect> rectangles = foundLocations.toList();
-
+    // have to do some swapping to figure out why there is a problem
             for (int i = 0; i < rectangles.size(); i++) {
                 Imgproc.rectangle(image,
                         new Point(rectangles.get(i).x,rectangles.get(i).y),
@@ -74,14 +75,116 @@ public class HogService {
             MultipartFile mfResult = new MockMultipartFile( UUID.randomUUID().toString(),
                     UUID.randomUUID().toString(), "image/png", content);
             System.out.println("complete");
+            imageReplacement();
             // delete later
-            // System.out.println(Arrays.toString(mfResult.getBytes()));
+            //System.out.println(Arrays.toString(mfResult.getBytes()));
 
 
             return ResponseEntity.ok(mfResult.getBytes());
         }catch (Exception e){
             e.printStackTrace();
         }
+        
         return null;
     }
+
+    public void imageReplacement() {
+        System.out.println("start replacement");
+
+        //Get the background of the original instance image by doing $original cropped instance image * (1 - original instance segmentation binary mask)$.
+        String originalPath = "/home/hog-repo/vision_microservice_hog/src/test/java/com/springboot/springfirstapp/original_image.jpg";
+        Mat originalImage = Imgcodecs.imread(originalPath);
+        String originalMaskPath = "/home/hog-repo/vision_microservice_hog/src/test/java/com/springboot/springfirstapp/original_mask.jpg";
+        Mat originalMask = Imgcodecs.imread(originalMaskPath); 
+       
+        Mat originalMaskCorrectType = new Mat();
+        originalMask.convertTo(originalMaskCorrectType, CvType.CV_16UC1);
+        Mat originalImage16Type = new Mat();
+        originalImage.convertTo(originalImage16Type, CvType.CV_16UC1);
+        System.out.println("Original Image bfeore converting: " + originalMask.size() + " " + originalMask.type());
+
+        System.out.println("Original Mask before converting: " + originalMask.size() + " " + originalMask.type());
+
+        System.out.println("Original Image after converting: " + originalImage16Type.size() + " " + originalImage16Type.type());
+
+        System.out.println("Original Mask after converting: " + originalMaskCorrectType.size() + " " + originalMaskCorrectType.type());
+
+        Mat invertedOriginalMask = new Mat();
+        Core.bitwise_not(originalMask, invertedOriginalMask);
+        System.out.println("Inverted Og Mask: " + invertedOriginalMask.size() + " " + invertedOriginalMask.type());
+
+        Mat thresholdedMat = new Mat();
+        // convert the invertedOriginalMask to grayscale
+        Imgproc.cvtColor(invertedOriginalMask, thresholdedMat, Imgproc.COLOR_BGR2GRAY);
+
+        System.out.println("Inverted Og Mask after converting to grayscale: " + thresholdedMat.size() + " " + thresholdedMat.type());
+
+        // Apply thresholding to make sure all the values are 1 or 0
+        double thresholdValue = 128; // Adjust the threshold value as needed
+        double maxValue = 255; // Maximum pixel value for the binary mask
+        
+        Core.inRange(thresholdedMat, new Scalar(thresholdValue), new Scalar(maxValue), thresholdedMat);
+        Imgcodecs.imwrite("/home/hog-repo/vision_microservice_hog/src/test/java/com/springboot/springfirstapp/inverted_og_mask.jpg", thresholdedMat);
+
+        System.out.println("Inverted mask after thresholding: " + thresholdedMat.type());
+
+        // load the binary segmentation mask from the photos
+        Mat thresholdedMask = Imgcodecs.imread("/home/hog-repo/vision_microservice_hog/src/test/java/com/springboot/springfirstapp/inverted_og_mask.jpg");
+    
+        System.out.println("Inverted mask type after changing: " + thresholdedMask.type());
+        
+        Mat originalBg = new Mat();
+        Core.bitwise_and(originalImage, thresholdedMask, originalBg);
+        Imgcodecs.imwrite("/home/hog-repo/vision_microservice_hog/src/test/java/com/springboot/springfirstapp/og_bg.jpg", originalBg);
+
+        System.out.println("OG BG: " + originalBg.size() + " " + originalBg.type());
+       
+
+
+        //Get the instance of the synthesized instance image by doing $synthesized instance image * synthesized instance segmentation binary mask$.
+        String synthPath = "/home/hog-repo/vision_microservice_hog/src/test/java/com/springboot/springfirstapp/generated_image.jpg";
+        String synthMaskPath = "/home/hog-repo/vision_microservice_hog/src/test/java/com/springboot/springfirstapp/generated_mask.jpg";
+       
+        Mat synthImage = Imgcodecs.imread(synthPath);
+        Mat synthMask =  Imgcodecs.imread(synthMaskPath);
+
+        System.out.println("Synthesized image type: " + synthImage.type());
+        System.out.println("Synthesized mask type: " + synthMask.type());
+
+        // turn the synth mask into grayscale, threshold it, and write it to a file
+        Mat synthThreshMask = new Mat();
+        Imgproc.cvtColor(synthMask, synthThreshMask, Imgproc.COLOR_BGR2GRAY);
+        Core.inRange(synthThreshMask, new Scalar(thresholdValue), new Scalar(maxValue), synthThreshMask);
+        Imgcodecs.imwrite("/home/hog-repo/vision_microservice_hog/src/test/java/com/springboot/springfirstapp/synth_mask.jpg", synthThreshMask);
+        System.out.println("Synth mask after thresholding: " + synthThreshMask.type());
+
+        // pull the synth mask from the file and convert it to the correct type
+        Mat synthMaskCorrectType = Imgcodecs.imread("/home/hog-repo/vision_microservice_hog/src/test/java/com/springboot/springfirstapp/synth_mask.jpg");
+    
+        Mat synthInstance = new Mat();
+        Core.bitwise_and(synthImage, synthMaskCorrectType, synthInstance);
+        Imgcodecs.imwrite("/home/hog-repo/vision_microservice_hog/src/test/java/com/springboot/springfirstapp/synth_instance.jpg", synthInstance);
+        
+    
+        //Add up the background of the original instance image and the instance of the synthesized instance image to get the replaced instance image.
+        Mat newInstance = new Mat();
+        Core.add(originalBg, synthInstance, newInstance);
+    
+        // Get a mismatch of the two segmentation masks by computing $original instance binary mask - the intersection of two masks$.
+        Mat intersection = new Mat();
+        Core.bitwise_and(originalMask, synthMask, intersection);
+        Mat mismatch = new Mat();
+        Core.subtract(originalMask, intersection, mismatch);
+        
+        // image write function 
+        String outputPath = "/home/hog-repo/vision_microservice_hog/src/test/java/com/springboot/springfirstapp/output_image.jpg";
+        Imgcodecs.imwrite(outputPath, newInstance);
+        Imgcodecs.imwrite("/home/hog-repo/vision_microservice_hog/src/test/java/com/springboot/springfirstapp/mismatch.jpg", mismatch);
+        System.out.println("completed replacement");
+        //Consolidate an inpainting request (video UUID, frame number, instance ID, replaced instance image, segmentation mask mismatch) and put it into the “Inpainting request queue”
+        // return newInstance and mismatch
+
+        
+    } 
+
 }

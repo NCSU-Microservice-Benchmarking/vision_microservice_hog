@@ -27,19 +27,15 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>opencv</groupId>
-			<artifactId>opencv480</artifactId>
-			<version>4.8.0-0</version>
+			<artifactId>opencv490</artifactId>
+			<version>4.9.0-0</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/src/main/resources/lib/opencv-480.jar</systemPath>
- 		</dependency>
-
-		<!-- <dependency>
-			<groupId>org</groupId>
-			<artifactId>opencv480</artifactId>
-			<version>4.8.0</version>
-		</dependency> -->
+			<systemPath>${project.basedir}/src/main/resources/lib/opencv-490.jar</systemPath>
+		</dependency>
+		
 		<!-- <dependency> -->
 		<!-- 	<groupId>org.opencv</groupId> -->
 		<!-- 	<artifactId>opencv</artifactId> -->
