@@ -30,10 +30,10 @@
 
 		<dependency>
 			<groupId>opencv</groupId>
-			<artifactId>opencv490</artifactId>
-			<version>4.9.0-0</version>
+			<artifactId>opencv4100</artifactId>
+			<version>4.10-0</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/src/main/resources/lib/opencv-490.jar</systemPath>
+			<systemPath>${project.basedir}/src/main/resources/lib/opencv-4100.jar</systemPath>
 		</dependency>
 		
 		<!-- <dependency> -->
@@ -63,6 +63,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
+					<mainClass>com.springboot.springfirstapp.SpringFirstAppApplication</mainClass>
 					<includeSystemScope>true</includeSystemScope>
 				</configuration>
 			</plugin>
