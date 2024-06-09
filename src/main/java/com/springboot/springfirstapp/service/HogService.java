@@ -19,6 +19,11 @@ import java.util.List;
 import java.util.UUID;
 
 
+import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.Properties;
 
 //@Service
 public class HogService {
@@ -90,7 +95,7 @@ public class HogService {
 
     public void imageReplacement() {
         System.out.println("start replacement");
-
+	
         //Get the background of the original instance image by doing $original cropped instance image * (1 - original instance segmentation binary mask)$.
         String originalPath = "/home/hog-repo/vision_microservice_hog/src/test/java/com/springboot/springfirstapp/original_image.jpg";
         Mat originalImage = Imgcodecs.imread(originalPath);
@@ -145,7 +150,7 @@ public class HogService {
         String synthPath = "/home/hog-repo/vision_microservice_hog/src/test/java/com/springboot/springfirstapp/generated_image.jpg";
         String synthMaskPath = "/home/hog-repo/vision_microservice_hog/src/test/java/com/springboot/springfirstapp/generated_mask.jpg";
        
-        Mat synthImage = Imgcodecs.imread(synthPath);
+	Mat synthImage = Imgcodecs.imread(synthPath);
         Mat synthMask =  Imgcodecs.imread(synthMaskPath);
 
         System.out.println("Synthesized image type: " + synthImage.type());
@@ -183,8 +188,36 @@ public class HogService {
         System.out.println("completed replacement");
         //Consolidate an inpainting request (video UUID, frame number, instance ID, replaced instance image, segmentation mask mismatch) and put it into the “Inpainting request queue”
         // return newInstance and mismatch
+   
+    }
 
-        
-    } 
+    public void consumeMessages(String topicName, String groupId)  {
+	System.out.println("Inside consumeMessages");
+	Properties props = new Properties();
+	//props.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+	//props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+	props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+	props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+	props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+	
+	System.out.println("Bootstrap Server: " + props.getProperty("bootstrap.servers"));
 
+	KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+	consumer.subscribe(Collections.singletonList(topicName));
+	int i = 0;
+	while (i < 10) {
+		System.out.println("Inside consumeMessages while loop");
+	    ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
+	    for (ConsumerRecord<String, String> record : records) {
+		System.out.printf("Received message: key=%s, value=%s%n", record.key());
+	    }
+	    i++;
+	    try {
+	    	Thread.sleep(1000);
+	    } catch (InterruptedException e) {
+		    Thread.currentThread().interrupt();
+	    }
+	}
+    }
 }
+

@@ -1,5 +1,10 @@
+
 # Use the official OpenJDK 21 image as the base image
 FROM mcr.microsoft.com/openjdk/jdk:21-ubuntu
+
+# Install Python 3 and               flask
+RUN apt-get update && apt-get install -y python3 python3-pip
+RUN pip3 install --trusted-host pypi.python.org flask
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -9,7 +14,7 @@ RUN echo "nameserver 8.8.8.8" >> /etc/resolv.conf
 RUN echo "nameserver 8.8.4.4" >> /etc/resolv.conf
 
 # Copy src/main/resources/open
-
+COPY src/test/java/com/springboot/springfirstapp/send_request.py /usr/lib
 COPY src/main/resources/lib/libopencv_java4100.so /usr/lib
 COPY src/main/resources/lib/libopencv_calib3d.so.410 /usr/lib
 COPY src/main/resources/lib/libopencv_core.so.410 /usr/lib

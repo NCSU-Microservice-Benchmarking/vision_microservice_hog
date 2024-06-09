@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class HogServiceConfig {
     @Bean
     public HogService hogBean() {
-        System.out.println("Create a HOG service");
+        System.out.println("Create a HOG service with Kafka messaging capability");
         return new HogService();
     }
 }

@@ -23,11 +23,14 @@ public class HOGController {
 
     @RequestMapping("/hello")
     public String hello() {
-        return "Hello World";
+        System.out.println("Hello world, will connect to the kafka service");
+	myHogService.consumeMessages("test", "test");
+	return "Hello World";
     }
 
     @RequestMapping("/health-check")
     public String healthCheck() {
+        System.out.println("Hello world, health check");
         return "healthy";
     }
 

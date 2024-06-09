@@ -2,7 +2,7 @@
 import requests
 
 if __name__ == "__main__":
-    host = "http://localhost:8080"
+    host = "http://localhost:5000"
     # encode the image as a binary string 
     image = open("bus.png","rb").read()
     # put the image in a multipart form
@@ -12,4 +12,4 @@ if __name__ == "__main__":
     # check the response status code
     print(response.status_code)
     # save the image
-    open("result.png","wb").write(response.content)
+    # open("result.png","wb").write(response.content)
