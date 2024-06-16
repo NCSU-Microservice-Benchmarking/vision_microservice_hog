@@ -20,6 +20,8 @@ import java.util.UUID;
 
 
 import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.clients.CommonClientConfigs;
+import org.apache.kafka.common.config.*;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import java.time.Duration;
 import java.util.Collections;
@@ -194,12 +196,19 @@ public class HogService {
     public void consumeMessages(String topicName, String groupId)  {
 	System.out.println("Inside consumeMessages");
 	Properties props = new Properties();
-	//props.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-	//props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+	props.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "my-kafka-controller-1.my-kafka-controller-headless.default.svc.cluster.local:9092");
+	props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupId);
 	props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 	props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 	props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+	props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
+	props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
+
+	props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
+	props.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
+	props.put(SaslConfigs.SASL_JAAS_CONFIG, "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"user1\" password=\"TeKecIhwII\";");
 	
+	// System.out.println("Bootstrap Server: " + ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG);
 	System.out.println("Bootstrap Server: " + props.getProperty("bootstrap.servers"));
 
 	KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
@@ -209,7 +218,7 @@ public class HogService {
 		System.out.println("Inside consumeMessages while loop");
 	    ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
 	    for (ConsumerRecord<String, String> record : records) {
-		System.out.printf("Received message: key=%s, value=%s%n", record.key());
+		System.out.printf("Received message: key=%s, value=%s\n", record.key(), record.value());
 	    }
 	    i++;
 	    try {
